@@ -1,27 +1,68 @@
-abstract class Either<L, R> {
+import 'package:equatable/equatable.dart';
+
+abstract class Either<L, R> extends Equatable {
   const Either();
-
-  bool isLeft() => this is Left<L, R>;
-  bool isRight() => this is Right<L, R>;
-
-  L get left => (this as Left<L, R>).value;
-  R get right => (this as Right<L, R>).value;
-
-  T fold<T>(T Function(L left) fnL, T Function(R right) fnR) {
-    if (isLeft()) {
-      return fnL(left);
-    } else {
-      return fnR(right);
-    }
-  }
+  
+  @override
+  List<Object?> get props => [];
+  
+  bool get isLeft;
+  bool get isRight;
+  
+  L? get left;
+  R? get right;
+  
+  T fold<T>(T Function(L left) ifLeft, T Function(R right) ifRight);
 }
 
 class Left<L, R> extends Either<L, R> {
-  const Left(this.value);
-  final L value;
+  final L _value;
+  
+  const Left(this._value);
+  
+  @override
+  bool get isLeft => true;
+  
+  @override
+  bool get isRight => false;
+  
+  @override
+  L? get left => _value;
+  
+  @override
+  R? get right => null;
+  
+  @override
+  T fold<T>(T Function(L left) ifLeft, T Function(R right) ifRight) {
+    return ifLeft(_value);
+  }
+  
+  @override
+  List<Object?> get props => [_value];
 }
 
 class Right<L, R> extends Either<L, R> {
-  const Right(this.value);
-  final R value;
+  final R _value;
+  
+  const Right(this._value);
+  
+  @override
+  bool get isLeft => false;
+  
+  @override
+  bool get isRight => true;
+  
+  @override
+  L? get left => null;
+  
+  @override
+  R? get right => _value;
+  
+  @override
+  T fold<T>(T Function(L left) ifLeft, T Function(R right) ifRight) {
+    return ifRight(_value);
+  }
+  
+  @override
+  List<Object?> get props => [_value];
 }

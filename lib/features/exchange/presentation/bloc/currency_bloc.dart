@@ -8,13 +8,10 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   final GetCurrencyRates getCurrencyRates;
   final GetDailyRates getDailyRates;
 
-  CurrencyState currentRatesState = CurrencyInitial();
-  CurrencyState dailyRatesState = DailyRatesInitial();
-
   CurrencyBloc({
     required this.getCurrencyRates,
     required this.getDailyRates,
-  }) : super(CurrencyInitial()) {
+  }) : super(const CurrencyInitial()) {
     on<LoadCurrencyRates>(_onLoadCurrencyRates);
     on<LoadDailyRates>(_onLoadDailyRates);
   }
@@ -23,20 +20,14 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     LoadCurrencyRates event,
     Emitter<CurrencyState> emit,
   ) async {
-    emit(CurrencyLoading());
+    emit(const CurrencyLoading());
     
     final params = GetCurrencyRatesParams(currencyCode: event.currencyCode);
     final result = await getCurrencyRates(params);
     
     result.fold(
-      (failure) {
-        currentRatesState = CurrencyError(failure.message);
-        emit(currentRatesState);
-      },
-      (rates) {
-        currentRatesState = CurrencyLoaded(rates);
-        emit(currentRatesState);
-      },
+      (failure) => emit(CurrencyError(failure.message)),
+      (rates) => emit(CurrencyLoaded(rates)),
     );
   }
 
@@ -44,25 +35,14 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     LoadDailyRates event,
     Emitter<CurrencyState> emit,
   ) async {
-    if (currentRatesState is CurrencyLoaded) {
-      dailyRatesState = DailyRatesLoading();
-      emit(dailyRatesState);
-    } else {
-      emit(DailyRatesLoading());
-    }
+    emit(const DailyRatesLoading());
     
     final params = GetDailyRatesParams(currencyCode: event.currencyCode);
     final result = await getDailyRates(params);
     
     result.fold(
-      (failure) {
-        dailyRatesState = CurrencyError(failure.message, isDaily: true);
-        emit(dailyRatesState);
-      },
-      (rates) {
-        dailyRatesState = DailyRatesLoaded(rates);
-        emit(dailyRatesState);
-      },
+      (failure) => emit(CurrencyError(failure.message, isDaily: true)),
+      (rates) => emit(DailyRatesLoaded(rates)),
     );
   }
 }

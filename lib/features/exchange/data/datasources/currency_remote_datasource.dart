@@ -96,6 +96,7 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       if (e.response?.statusCode == 429) {
         throw Exception('Rate limit exceeded. Try again later.');
       }
+      print('Network error: ${e.message}');
       throw Exception('Network error: ${e.message}');
     } catch (e) {
       throw Exception('Unexpected error: $e');

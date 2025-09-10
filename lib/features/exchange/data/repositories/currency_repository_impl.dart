@@ -14,12 +14,11 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
   Future<Either<Failure, List<CurrencyRate>>> getRates(String currencyCode) async {
     try {
       final rates = await remoteDataSource.getRates(currencyCode);
-      rates.sort((a, b) => a.date.compareTo(b.date));
       return Right(rates);
     } on DioException catch (e) {
       return Left(_handleDioException(e));
     } catch (e) {
-      return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+      return Left(UnknownFailure(e.toString()));
     }
   }
 
@@ -31,25 +30,25 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
     } on DioException catch (e) {
       return Left(_handleDioException(e));
     } catch (e) {
-      return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+      return Left(UnknownFailure(e.toString()));
     }
   }
 
-  Failure _handleDioException(DioException exception) {
-    switch (exception.type) {
+  Failure _handleDioException(DioException e) {
+    switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return const NetworkFailure('Connection timeout');
+        return const NetworkFailure('Connection timeout. Please check your internet connection.');
       case DioExceptionType.connectionError:
-        return const NetworkFailure('No internet connection');
+        return const NetworkFailure('Connection error. Please check your internet connection.');
       case DioExceptionType.badResponse:
-        if (exception.response?.statusCode == 429) {
-          return const ServerFailure('Rate limit exceeded. Try again later.');
+        if (e.response?.statusCode == 429) {
+          return const ServerFailure('Rate limit exceeded. Please try again later.');
         }
-        return ServerFailure('Server error: ${exception.response?.statusCode}');
+        return ServerFailure('Server error: ${e.response?.statusCode}');
       default:
-        return NetworkFailure('Network error: ${exception.message}');
+        return NetworkFailure(e.message ?? 'Network error occurred');
     }
   }
 }

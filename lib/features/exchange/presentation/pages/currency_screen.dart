@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:specs/core/utils/format_utils.dart';
 import 'package:specs/features/exchange/presentation/widgets/daily_rate_card.dart';
 import '../bloc/currency_bloc.dart';
 import '../bloc/currency_event.dart';
@@ -16,6 +17,7 @@ class CurrencyScreen extends StatefulWidget {
 
 class _CurrencyScreenState extends State<CurrencyScreen> {
   final controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool show30Days = false;
   bool isExpanded = false;
 
@@ -27,20 +29,22 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   }
 
   void _onSearchPressed() {
-    final currencyCode = controller.text.trim().toUpperCase();
-    if (currencyCode.isNotEmpty) {
-      setState(() {
-        show30Days = true;
-      });
-      
-      context.read<CurrencyBloc>().add(
-        LoadCurrencyRates(currencyCode: currencyCode),
-      );
-      
-      if (isExpanded) {
+    if (_formKey.currentState?.validate() ?? false) {
+      final currencyCode = controller.text.trim().toUpperCase();
+      if (currencyCode.isNotEmpty) {
+        setState(() {
+          show30Days = true;
+        });
+        
         context.read<CurrencyBloc>().add(
-          LoadDailyRates(currencyCode: currencyCode),
+          LoadCurrencyRates(currencyCode: currencyCode),
         );
+        
+        if (isExpanded) {
+          context.read<CurrencyBloc>().add(
+            LoadDailyRates(currencyCode: currencyCode),
+          );
+        }
       }
     }
   }
@@ -87,20 +91,40 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
               ),
               const SizedBox(height: 24),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: controller,
-                  textCapitalization: TextCapitalization.characters,
-                  maxLength: 3,
-                  onSubmitted: (_) => _onSearchPressed(),
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                  decoration: const InputDecoration(
-                    labelText: 'Enter the currency code',
-                    filled: true,
-                    fillColor: Color(0xFFF5F5F5),
-                    labelStyle: TextStyle(color: Color(0xFF03A9F4), fontSize: 16),
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF03A9F4))),
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF03A9F4), width: 2)),
+                padding: FormatUtils.getResponsivePadding(context),
+                child: Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: controller,
+                    textCapitalization: TextCapitalization.characters,
+                    maxLength: 3,
+                    onFieldSubmitted: (_) => _onSearchPressed(),
+                    style: TextStyle(
+                      fontSize: FormatUtils.getResponsiveFontSize(context, 16), 
+                      color: Colors.black
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Enter the currency code',
+                      filled: true,
+                      fillColor: Color(0xFFF5F5F5),
+                      labelStyle: TextStyle(color: Colors.black, fontSize: 16),
+                      floatingLabelStyle: TextStyle(color: Color(0xFF03A9F4), fontSize: 16),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF03A9F4), width: 2)),
+                      errorStyle: TextStyle(color: Colors.red),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a currency code';
+                      }
+                      if (value.trim().length != 3) {
+                        return 'Currency code must be exactly 3 characters';
+                      }
+                      if (!RegExp(r'^[A-Z]{3}$').hasMatch(value.trim())) {
+                        return 'Please enter only letters (A-Z)';
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ),

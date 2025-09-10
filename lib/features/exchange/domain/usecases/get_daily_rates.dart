@@ -1,15 +1,18 @@
+import 'package:equatable/equatable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/utils/either.dart';
 import '../entities/currency_rate.dart';
 import '../repositories/currency_repository.dart';
 
-class GetDailyRatesParams {
+class GetDailyRatesParams extends Equatable {
   final String currencyCode;
-  
-  const GetDailyRatesParams({required this.currencyCode});
-}
 
+  const GetDailyRatesParams({required this.currencyCode});
+
+  @override
+  List<Object?> get props => [currencyCode];
+}
 class GetDailyRates implements UseCase<List<CurrencyRate>, GetDailyRatesParams> {
   final CurrencyRepository repository;
 
@@ -22,18 +25,27 @@ class GetDailyRates implements UseCase<List<CurrencyRate>, GetDailyRatesParams> 
     return result.fold(
       (failure) => Left(failure),
       (rates) {
-        final updatedRates = <CurrencyRate>[];
-        for (int i = 0; i < rates.length; i++) {
-          if (i == rates.length - 1) {
-            updatedRates.add(rates[i]);
-          } else {
-            updatedRates.add(rates[i].copyWith(
-              closeDiff: rates[i].close - rates[i + 1].close,
-            ));
-          }
-        }
-        return Right(updatedRates);
+        final processedRates = _calculateCloseDiff(rates);
+        return Right(processedRates);
       },
     );
+  }
+
+  List<CurrencyRate> _calculateCloseDiff(List<CurrencyRate> rates) {
+    if (rates.isEmpty) return rates;
+    
+    final sortedRates = List<CurrencyRate>.from(rates)
+      ..sort((a, b) => a.date.compareTo(b.date));
+    
+    for (int i = 1; i < sortedRates.length; i++) {
+      final currentRate = sortedRates[i];
+      final previousRate = sortedRates[i - 1];
+      
+      sortedRates[i] = currentRate.copyWith(
+        closeDiff: currentRate.close - previousRate.close,
+      );
+    }
+    
+    return sortedRates.reversed.toList();
   }
 }

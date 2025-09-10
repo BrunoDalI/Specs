@@ -13,14 +13,35 @@ class TextPairWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        text: '$label:   ',
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextSpan(
-            text: FormatUtils.formatCurrency(value ?? 0.0),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+          Flexible(
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontSize: isSmallScreen ? 10 : 12, 
+                fontWeight: FontWeight.normal, 
+                color: Colors.black
+              ),
+            ),
+          ),
+          const SizedBox(width: 8, height: 10),
+          Flexible(
+            child: Text(
+              FormatUtils.formatCurrency(value ?? 0.0),
+              style: TextStyle(
+                fontSize: isSmallScreen ? 12 : 14, 
+                fontWeight: FontWeight.bold, 
+                color: Colors.black
+              ),
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       ),

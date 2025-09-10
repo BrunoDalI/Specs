@@ -1,8 +1,8 @@
-import '../error/failures.dart';
 import '../utils/either.dart';
+import '../error/failures.dart';
 
-abstract class UseCase<T, Params> {
-  Future<Either<Failure, T>> call(Params params);
+abstract class UseCase<Type, Params> {
+  Future<Either<Failure, Type>> call(Params params);
 }
 
 class NoParams {
