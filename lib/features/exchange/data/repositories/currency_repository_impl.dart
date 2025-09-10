@@ -39,16 +39,19 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return const NetworkFailure('Connection timeout. Please check your internet connection.');
+        return const ConnectionFailure('Timeout de conexão. Verifique sua internet.');
       case DioExceptionType.connectionError:
-        return const NetworkFailure('Connection error. Please check your internet connection.');
+        return const ConnectionFailure('Erro de conexão. Verifique sua internet.');
       case DioExceptionType.badResponse:
         if (e.response?.statusCode == 429) {
-          return const ServerFailure('Rate limit exceeded. Please try again later.');
+          return const ServerFailure('Limite de requisições excedido. Tente novamente mais tarde.');
         }
-        return ServerFailure('Server error: ${e.response?.statusCode}');
+        if (e.response?.statusCode == 500) {
+          return const ServerFailure('Erro interno do servidor. Tente novamente mais tarde.');
+        }
+        return ServerFailure('Erro do servidor: ${e.response?.statusCode}');
       default:
-        return NetworkFailure(e.message ?? 'Network error occurred');
+        return NetworkFailure(e.message ?? 'Erro de rede desconhecido');
     }
   }
 }

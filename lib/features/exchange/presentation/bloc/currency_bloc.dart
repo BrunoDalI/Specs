@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/usecases/get_currency_rates.dart';
 import '../../domain/usecases/get_daily_rates.dart';
 import 'currency_event.dart';
@@ -26,7 +27,17 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     final result = await getCurrencyRates(params);
     
     result.fold(
-      (failure) => emit(CurrencyError(failure.message)),
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(const CurrencyError('Server error. Please try again later.'));
+        } else if (failure is ConnectionFailure) {
+          emit(const CurrencyError('Connection error. Please check your internet.'));
+        } else if (failure is NetworkFailure) {
+          emit(const CurrencyError('Network error. Please check your connection.'));
+        } else {
+          emit(const CurrencyError('An unexpected error occurred.'));
+        }
+      },
       (rates) => emit(CurrencyLoaded(rates)),
     );
   }
@@ -41,7 +52,17 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     final result = await getDailyRates(params);
     
     result.fold(
-      (failure) => emit(CurrencyError(failure.message, isDaily: true)),
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(const CurrencyError('Server error. Please try again later.', isDaily: true));
+        } else if (failure is ConnectionFailure) {
+          emit(const CurrencyError('Connection error. Please check your internet.', isDaily: true));
+        } else if (failure is NetworkFailure) {
+          emit(const CurrencyError('Network error. Please check your connection.', isDaily: true));
+        } else {
+          emit(const CurrencyError('An unexpected error occurred.', isDaily: true));
+        }
+      },
       (rates) => emit(DailyRatesLoaded(rates)),
     );
   }

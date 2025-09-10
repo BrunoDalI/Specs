@@ -25,6 +25,10 @@ class ValidationFailure extends Failure {
   const ValidationFailure([super.message = 'Validation error']);
 }
 
+class ConnectionFailure extends Failure {
+  const ConnectionFailure([super.message = 'Connection error occurred']);
+}
+
 class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'An unexpected error occurred']);
 }
