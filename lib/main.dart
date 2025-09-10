@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // title: 'Currency Exchange',
       home: BlocProvider(
         create: (_) => di.sl<CurrencyBloc>(),
         child: CurrencyScreen(),

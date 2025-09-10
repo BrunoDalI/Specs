@@ -165,11 +165,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
           }
         }
       }
-      
-      if (!dataExtracted) {
-        // Excluir para produção
-       // rates.addAll(_getMockDailyRates());
-      }
     } catch (e) {
       //print('Error parsing daily rates: $e');
     }
@@ -224,52 +219,4 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       return 0.0;
     }
   }
-  
-  // Excluir para produção
-  /// exemplo teste para validar design e funcionamento
-  // List<CurrencyRate> _getMockDailyRates() {
-  //   final mockRates = <CurrencyRate>[
-  //     CurrencyRate(
-  //       date: '2025-09-10T03:00:00.000+00:00',
-  //       open: 5.0666,
-  //       high: 5.0689,
-  //       low: 4.9836,
-  //       close: 5.0038,
-  //       closeDiff: -0.0577,
-  //     ),
-  //     CurrencyRate(
-  //       date: '2025-09-09T03:00:00.000+00:00',
-  //       open: 5.1233,
-  //       high: 5.1456,
-  //       low: 5.0123,
-  //       close: 5.0615,
-  //       closeDiff: -0.0430, 
-  //     ),
-  //     CurrencyRate(
-  //       date: '2025-09-08T03:00:00.000+00:00',
-  //       open: 5.1045,
-  //       high: 5.1233,
-  //       low: 5.0897,
-  //       close: 5.1045,
-  //     ),
-  //     CurrencyRate(
-  //       date: '2025-09-07T03:00:00.000+00:00',
-  //       open: 5.1122,
-  //       high: 5.1300,
-  //       low: 5.0788,
-  //       close: 5.0980,
-  //       closeDiff: -0.0065,
-  //     ),
-  //     CurrencyRate(
-  //       date: '2025-09-06T03:00:00.000+00:00',
-  //       open: 5.0897,
-  //       high: 5.1388,
-  //       low: 5.0788,
-  //       close: 5.1045,
-  //       closeDiff: 0.0148,
-  //     ),
-  //   ];
-    
-  //   return mockRates;
-  // }
 }
