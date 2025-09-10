@@ -4,31 +4,31 @@ import '../../../../core/utils/either.dart';
 import '../entities/currency_rate.dart';
 import '../repositories/currency_repository.dart';
 
-class GetCurrencyRatesParams {
+class GetDailyRatesParams {
   final String currencyCode;
   
-  const GetCurrencyRatesParams({required this.currencyCode});
+  const GetDailyRatesParams({required this.currencyCode});
 }
 
-class GetCurrencyRates implements UseCase<List<CurrencyRate>, GetCurrencyRatesParams> {
+class GetDailyRates implements UseCase<List<CurrencyRate>, GetDailyRatesParams> {
   final CurrencyRepository repository;
 
-  GetCurrencyRates(this.repository);
+  GetDailyRates(this.repository);
 
   @override
-  Future<Either<Failure, List<CurrencyRate>>> call(GetCurrencyRatesParams params) async {
-    final result = await repository.getRates(params.currencyCode);
+  Future<Either<Failure, List<CurrencyRate>>> call(GetDailyRatesParams params) async {
+    final result = await repository.getDailyRates(params.currencyCode);
     
     return result.fold(
       (failure) => Left(failure),
       (rates) {
         final updatedRates = <CurrencyRate>[];
         for (int i = 0; i < rates.length; i++) {
-          if (i == 0) {
+          if (i == rates.length - 1) {
             updatedRates.add(rates[i]);
           } else {
             updatedRates.add(rates[i].copyWith(
-              closeDiff: rates[i].close - rates[i - 1].close,
+              closeDiff: rates[i].close - rates[i + 1].close,
             ));
           }
         }

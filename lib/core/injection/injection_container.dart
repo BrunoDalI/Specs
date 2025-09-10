@@ -4,6 +4,7 @@ import '../../features/exchange/data/datasources/currency_remote_datasource.dart
 import '../../features/exchange/data/repositories/currency_repository_impl.dart';
 import '../../features/exchange/domain/repositories/currency_repository.dart';
 import '../../features/exchange/domain/usecases/get_currency_rates.dart';
+import '../../features/exchange/domain/usecases/get_daily_rates.dart';
 import '../../features/exchange/presentation/bloc/currency_bloc.dart';
 
 final sl = GetIt.instance;
@@ -24,12 +25,16 @@ Future<void> init() async {
 
 void _initPresentation() {
   // BLoC
-  sl.registerFactory(() => CurrencyBloc(getCurrencyRates: sl()));
+  sl.registerFactory(() => CurrencyBloc(
+    getCurrencyRates: sl(),
+    getDailyRates: sl(),
+  ));
 }
 
 void _initDomain() {
   // Use Cases
   sl.registerLazySingleton(() => GetCurrencyRates(sl()));
+  sl.registerLazySingleton(() => GetDailyRates(sl()));
 }
 
 void _initData() {

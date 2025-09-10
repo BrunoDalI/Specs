@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:specs/features/exchange/presentation/widgets/daily_rate_card.dart';
 import '../bloc/currency_bloc.dart';
 import '../bloc/currency_event.dart';
 import '../bloc/currency_state.dart';
@@ -15,6 +16,9 @@ class CurrencyScreen extends StatefulWidget {
 
 class _CurrencyScreenState extends State<CurrencyScreen> {
   final controller = TextEditingController();
+  bool show30Days = false;
+  bool isExpanded = false;
+
 
   @override
   void dispose() {
@@ -25,8 +29,31 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   void _onSearchPressed() {
     final currencyCode = controller.text.trim().toUpperCase();
     if (currencyCode.isNotEmpty) {
+      setState(() {
+        show30Days = true;
+      });
+      
       context.read<CurrencyBloc>().add(
         LoadCurrencyRates(currencyCode: currencyCode),
+      );
+      
+      if (isExpanded) {
+        context.read<CurrencyBloc>().add(
+          LoadDailyRates(currencyCode: currencyCode),
+        );
+      }
+    }
+  }
+  
+  void _toggleDailyRates() {
+    final currencyCode = controller.text.trim().toUpperCase();
+    setState(() {
+      isExpanded = !isExpanded;
+    });
+    
+    if (isExpanded && currencyCode.isNotEmpty) {
+      context.read<CurrencyBloc>().add(
+        LoadDailyRates(currencyCode: currencyCode),
       );
     }
   }
@@ -98,6 +125,11 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: BlocBuilder<CurrencyBloc, CurrencyState>(
+                  buildWhen: (previous, current) => 
+                    current is CurrencyInitial ||
+                    current is CurrencyLoading || 
+                    current is CurrencyLoaded || 
+                    (current is CurrencyError && !current.isDaily),
                   builder: (context, state) {
                     if (state is CurrencyLoading) {
                       return const Center(child: CircularProgressIndicator());
@@ -110,7 +142,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                         rate: rate,
                       );
                     }
-                    if (state is CurrencyError) {
+                    if (state is CurrencyError && !state.isDaily) {
                       return Center(
                         child: Text(
                           state.message,
@@ -123,6 +155,90 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+
+              if (show30Days) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'LAST 30 DAYS',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          isExpanded ? Icons.remove : Icons.add,
+                          color: const Color(0xFF03A9F4),
+                        ),
+                        onPressed: _toggleDailyRates,
+                      ),
+                    ],
+                  ),
+                ),
+                if (isExpanded) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: BlocBuilder<CurrencyBloc, CurrencyState>(
+                      buildWhen: (previous, current) => 
+                        current is DailyRatesInitial ||
+                        current is DailyRatesLoading || 
+                        current is DailyRatesLoaded || 
+                        (current is CurrencyError && current.isDaily),
+                      builder: (context, state) {
+                        if (state is DailyRatesLoading) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        if (state is DailyRatesLoaded) {
+                          if (state.rates.isEmpty) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Text('No daily rates available'),
+                              ),
+                            );
+                          }
+                          
+                          return Column(
+                            children: state.rates.map((rate) => DailyRateCard(rate: rate)).toList(),
+                          );
+                        }
+
+                        
+                        if (state is CurrencyError && state.isDaily) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                state.message,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    ),
+                  ),
+                ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const Divider(
+                    thickness: 2,
+                    color: Color(0xFF03A9F4),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

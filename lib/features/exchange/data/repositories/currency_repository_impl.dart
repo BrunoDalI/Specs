@@ -23,6 +23,18 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<CurrencyRate>>> getDailyRates(String currencyCode) async {
+    try {
+      final rates = await remoteDataSource.getDailyRates(currencyCode);
+      return Right(rates);
+    } on DioException catch (e) {
+      return Left(_handleDioException(e));
+    } catch (e) {
+      return Left(UnknownFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
   Failure _handleDioException(DioException exception) {
     switch (exception.type) {
       case DioExceptionType.connectionTimeout:

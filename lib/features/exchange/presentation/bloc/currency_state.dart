@@ -21,11 +21,25 @@ class CurrencyLoaded extends CurrencyState {
   List<Object> get props => [rates];
 }
 
-class CurrencyError extends CurrencyState {
-  final String message;
+class DailyRatesInitial extends CurrencyState {}
 
-  const CurrencyError(this.message);
+class DailyRatesLoading extends CurrencyState {}
+
+class DailyRatesLoaded extends CurrencyState {
+  final List<CurrencyRate> rates;
+
+  const DailyRatesLoaded(this.rates);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [rates];
+}
+
+class CurrencyError extends CurrencyState {
+  final String message;
+  final bool isDaily;
+
+  const CurrencyError(this.message, {this.isDaily = false});
+
+  @override
+  List<Object> get props => [message, isDaily];
 }
