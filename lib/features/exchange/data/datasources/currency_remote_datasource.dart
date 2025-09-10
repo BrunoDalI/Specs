@@ -24,21 +24,12 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
           'to_symbol': 'BRL',
         },
       );
-    
-
-      // Debug information - remove in production
-      // print('Response status: ${response.statusCode}');
-      // print('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         return _parseRates(response.data, currencyCode);
       }
       throw Exception('Failed to load rates: ${response.statusCode}');
     } on DioException catch (e) {
-      // Debug information - remove in production
-      // print('DioException: ${e.type}');
-      // print('DioException message: ${e.message}');
-      // print('DioException response: ${e.response?.data}');
       
       if (e.type == DioExceptionType.connectionError) {
         throw Exception('Connection error. Check your internet connection.');
@@ -48,17 +39,12 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       }
       throw Exception('Network error: ${e.message}');
     } catch (e) {
-
-      // print('General error: $e');
       throw Exception('Unexpected error: $e');
     }
   }
 
   List<CurrencyRate> _parseRates(dynamic data, String currencyCode) {
     final rates = <CurrencyRate>[];
-    
-    // Debug information - remove in production
-    // print('Parsing data: $data');
     
     if (data is Map<String, dynamic>) {
       final exchangeRate = data['exchangeRate']?.toString() ?? 
@@ -82,38 +68,28 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
   @override
   Future<List<CurrencyRate>> getDailyRates(String currencyCode) async {
     try {
-      //print('Fetching daily rates for $currencyCode');
-      
       final response = await dio.get(
         '/open/dailyExchangeRate',
         queryParameters: {
-          'apiKey': 'RVZG0GHEV2KORLNA',
+          'apiKey': 'RVZG0GHEV2KORLNA', 
           // 'from_symbol': 'BRL',
           // 'to_symbol': currencyCode,
           'from_symbol': currencyCode,
           'to_symbol': 'BRL',
-          //'limit': 30,
+          //'limit': 30, // Como a api n tem um limite definido forcei mostrar os ultimos 30 registros na linha 89
         },
       );
 
-      //print('Responseeeee $response');
-      //print('url: ${response.realUri}');
-
-      //print('Daily rates response status: ${response.statusCode}');
-      
       if (response.statusCode == 200) {
         if (response.data == null) {
-          //print('Response data is null');
           return [];
         }
-        
-        //print('Response data type: ${response.data.runtimeType}');
-        
-        return _parseDailyRates(response.data);
+      
+        final rates = _parseDailyRates(response.data);
+        return rates.take(30).toList(); // Limitei os ultimos 30 registros
       }
       throw Exception('Failed to load daily rates: ${response.statusCode}');
     } on DioException catch (e) {
-      //print('DioException in getDailyRates: ${e.type}, ${e.message}');
       if (e.type == DioExceptionType.connectionError) {
         throw Exception('Connection error. Check your internet connection.');
       }
@@ -122,7 +98,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       }
       throw Exception('Network error: ${e.message}');
     } catch (e) {
-      //print('Unexpected error in getDailyRates: $e');
       throw Exception('Unexpected error: $e');
     }
   }
@@ -130,13 +105,11 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
   List<CurrencyRate> _parseDailyRates(dynamic data) {
     final rates = <CurrencyRate>[];
     
-    //print('Parsing daily rates data type: ${data.runtimeType}');
     if (data != null) {
       String dataStr = data.toString();
       if (dataStr.length > 100) {
         dataStr = '${dataStr.substring(0, 100)}...';
       }
-      //print('Parsing daily rates data sample: $dataStr');
     }
     
     bool dataExtracted = false;
@@ -194,7 +167,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       }
       
       if (!dataExtracted) {
-        //print('No data extracted from API response. Using mock data.');
         // Excluir para produção
        // rates.addAll(_getMockDailyRates());
       }
@@ -203,7 +175,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
     }
     
     if (rates.isEmpty) {
-      //print('No rates were parsed from data');
       rates.add(CurrencyRate(
         date: DateTime.now().toIso8601String(),
         close: 0.0,
@@ -234,8 +205,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       double highDouble = _parseDoubleValue(highValue);
       double lowDouble = _parseDoubleValue(lowValue);
       
-      //print('Rate data: date=$date, open=$openDouble, high=$highDouble, low=$lowDouble, close=$closeDouble');
-      
       return CurrencyRate(
         date: date,
         close: closeDouble,
@@ -244,7 +213,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
         low: lowDouble,
       );
     } catch (e) {
-      //print('Error creating rate from map: $e');
       return null;
     }
   }

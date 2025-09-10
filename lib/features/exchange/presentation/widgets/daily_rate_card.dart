@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:specs/core/utils/formt_utils.dart';
+import 'package:specs/core/utils/format_utils.dart';
 import 'package:specs/features/exchange/domain/entities/currency_rate.dart';
+import 'package:specs/features/exchange/presentation/widgets/text_pair.dart';
 
 
 class DailyRateCard extends StatelessWidget {
@@ -18,6 +19,9 @@ class DailyRateCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Card(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
         color: Colors.white,
         elevation: 2,
         margin: const EdgeInsets.only(bottom: 8),
@@ -34,31 +38,27 @@ class DailyRateCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('OPEN: ${FormatUtils.formatCurrency(rate.open ?? 0.0)}'),
-                  Text('HIGH: ${FormatUtils.formatCurrency(rate.high ?? 0.0)}'),
+                  TextPairWidget(label: 'OPEN', value: rate.open),
+                  TextPairWidget(label: 'HIGH', value: rate.high),
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('CLOSE: ${FormatUtils.formatCurrency(rate.close)}'),
-                  Text('LOW: ${FormatUtils.formatCurrency(rate.low ?? 0.0)}'),
+                  TextPairWidget(label: 'CLOSE', value: rate.close),
+                  TextPairWidget(label: 'LOW', value: rate.low),
                 ],
               ),
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Text('CLOSE DIFF (%): '),
+                  const Text('CLOSE DIFF (%): ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),),
                   Text(
                     closeDiffPercentage,
-                    style: TextStyle(fontSize: 12, color: diffColor, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, color: diffColor, fontWeight: FontWeight.bold),
                   ),
-                  Icon(
-                    diffIcon,
-                    size: 25,
-                    color: diffColor,
-                  ),
+                  Icon(diffIcon, size: 25, color: diffColor),
                 ],
               ),
             ],

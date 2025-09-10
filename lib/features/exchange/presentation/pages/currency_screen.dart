@@ -209,8 +209,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                             );
                           }
                           
-                          return Column(
-                            children: state.rates.map((rate) => DailyRateCard(rate: rate)).toList(),
+                          return Card(
+                            color: Colors.grey[200],
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              child: Column(
+                                children: state.rates.map((rate) => DailyRateCard(rate: rate)).toList(),
+                              ),
+                            ),
                           );
                         }
 
