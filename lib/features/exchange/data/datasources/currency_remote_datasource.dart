@@ -112,7 +112,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       }
     }
     
-    bool dataExtracted = false;
     
     try {
       if (data is Map<String, dynamic> && data.containsKey('data')) {
@@ -123,7 +122,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
               final rate = _createRateFromMap(item);
               if (rate != null) {
                 rates.add(rate);
-                dataExtracted = true;
               }
             }
           }
@@ -136,7 +134,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
             final rate = _createRateFromMap(item);
             if (rate != null) {
               rates.add(rate);
-              dataExtracted = true;
             }
           }
         }
@@ -151,7 +148,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
                 final rate = _createRateFromMap(item);
                 if (rate != null) {
                   rates.add(rate);
-                  dataExtracted = true;
                 }
               }
             }
@@ -161,7 +157,6 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
           final rate = _createRateFromMap(data);
           if (rate != null) {
             rates.add(rate);
-            dataExtracted = true;
           }
         }
       }
