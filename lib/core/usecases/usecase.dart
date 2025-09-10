@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_types_as_parameter_names
 import '../utils/either.dart';
 import '../error/failures.dart';
 

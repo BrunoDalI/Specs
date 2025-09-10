@@ -15,7 +15,7 @@ class TextPairWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: '$label:',
+        text: '$label: ',
         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.black),
         children: [
           const WidgetSpan(
