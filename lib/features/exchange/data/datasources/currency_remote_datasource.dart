@@ -24,17 +24,19 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       );
     
 
-      print('Response status: ${response.statusCode}');
-      print('Response data: ${response.data}');
+      // Debug information - remove in production
+      // print('Response status: ${response.statusCode}');
+      // print('Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         return _parseRates(response.data, currencyCode);
       }
       throw Exception('Failed to load rates: ${response.statusCode}');
     } on DioException catch (e) {
-      print('DioException: ${e.type}');
-      print('DioException message: ${e.message}');
-      print('DioException response: ${e.response?.data}');
+      // Debug information - remove in production
+      // print('DioException: ${e.type}');
+      // print('DioException message: ${e.message}');
+      // print('DioException response: ${e.response?.data}');
       
       if (e.type == DioExceptionType.connectionError) {
         throw Exception('Connection error. Check your internet connection.');
@@ -44,7 +46,8 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       }
       throw Exception('Network error: ${e.message}');
     } catch (e) {
-      print('General error: $e');
+      // Debug information - remove in production
+      // print('General error: $e');
       throw Exception('Unexpected error: $e');
     }
   }
@@ -52,7 +55,8 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
   List<CurrencyRate> _parseRates(dynamic data, String currencyCode) {
     final rates = <CurrencyRate>[];
     
-    print('Parsing data: $data');
+    // Debug information - remove in production
+    // print('Parsing data: $data');
     
     if (data is Map<String, dynamic>) {
       final exchangeRate = data['exchangeRate']?.toString() ?? 
@@ -60,10 +64,12 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
         data['value']?.toString() ?? 
         data['close']?.toString() ?? '0';
       
-      final timestamp = data['timestamp']?.toString() ??  data['date']?.toString() ??  DateTime.now().toIso8601String();
+      final timestamp = data['timestamp']?.toString() ??  
+        data['date']?.toString() ??  
+        DateTime.now().toIso8601String();
       
       rates.add(CurrencyRate(
-        date: timestamp.contains('T') ? timestamp.split('T')[0] : timestamp,
+        date: timestamp,
         close: double.tryParse(exchangeRate) ?? 0.0,
       ));
     }

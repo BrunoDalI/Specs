@@ -17,6 +17,21 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   final controller = TextEditingController();
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _onSearchPressed() {
+    final currencyCode = controller.text.trim().toUpperCase();
+    if (currencyCode.isNotEmpty) {
+      context.read<CurrencyBloc>().add(
+        LoadCurrencyRates(currencyCode: currencyCode),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -49,6 +64,8 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                 child: TextField(
                   controller: controller,
                   textCapitalization: TextCapitalization.characters,
+                  maxLength: 3,
+                  onSubmitted: (_) => _onSearchPressed(),
                   style: const TextStyle(fontSize: 16, color: Colors.black),
                   decoration: const InputDecoration(
                     labelText: 'Enter the currency code',
@@ -72,11 +89,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                       backgroundColor: const Color(0xFF03A9F4),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     ),
-                    onPressed: () {
-                      context.read<CurrencyBloc>().add(
-                        LoadCurrencyRates(currencyCode: controller.text),
-                      );
-                    },
+                    onPressed: _onSearchPressed,
                     child: const Text('EXCHANGE RESULT', style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 ),

@@ -76,7 +76,7 @@ class ExchangeResultWidget extends StatelessWidget {
                     color: Color(0xFFE3F2FD),
                   ),
                   child: Text(
-                    'R\$ ${rate?.close.toStringAsFixed(2) ?? '0.00'}',
+                    'R\$ ${rate?.close.toStringAsFixed(2).replaceAll('.', ',') ?? '0,00'}',
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

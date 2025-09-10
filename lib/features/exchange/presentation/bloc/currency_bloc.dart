@@ -15,11 +15,13 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     Emitter<CurrencyState> emit,
   ) async {
     emit(CurrencyLoading());
-    try {
-      final rates = await getCurrencyRates(event.currencyCode);
-      emit(CurrencyLoaded(rates));
-    } catch (e) {
-      emit(CurrencyError(e.toString()));
-    }
+    
+    final params = GetCurrencyRatesParams(currencyCode: event.currencyCode);
+    final result = await getCurrencyRates(params);
+    
+    result.fold(
+      (failure) => emit(CurrencyError(failure.message)),
+      (rates) => emit(CurrencyLoaded(rates)),
+    );
   }
 }
