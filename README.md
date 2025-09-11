@@ -294,39 +294,6 @@ flutter run --dart-define=FLUTTER_WEB_USE_SKIA=true
 - Uso de memória: < 50MB
 - FPS constante: 60fps
 
----
-
-## 🤝 Contribuição
-
-### Padrões de Código
-- **Lint Rules**: Análise estática rigorosa
-- **Code Style**: Formatação consistente
-- **Documentation**: Código autodocumentado
-- **Testing**: Cobertura mínima de 80%
-
-### Workflow de Desenvolvimento
-1. Fork do projeto
-2. Criação de feature branch
-3. Desenvolvimento com testes
-4. Code review
-5. Merge para main
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
----
-
-## 📞 Contato
-
-**Desenvolvedor**: Bruno Dal  
-**Email**: brunodal@example.com  
-**LinkedIn**: [linkedin.com/in/brunodal](https://linkedin.com/in/brunodal)  
-**GitHub**: [github.com/BrunoDalI](https://github.com/BrunoDalI)
-
----
 
 ## 🏆 Considerações Técnicas
 
@@ -352,5 +319,5 @@ Este projeto está licenciado sob a [MIT License](LICENSE).
 
 <div align="center">
   <p>Desenvolvido com ❤️ usando Flutter</p>
-  <p>© 2025 Bruno Dall. Todos os direitos reservados.</p>
+  <p>© 2025 Bruno Dall.</p>
 </div>
