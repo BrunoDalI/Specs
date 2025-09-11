@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../domain/entities/currency_rate.dart';
 
 abstract class CurrencyRemoteDataSource {
@@ -10,6 +11,7 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
   final Dio dio;
 
   CurrencyRemoteDataSourceImpl({required this.dio});
+  
 
   @override
   Future<List<CurrencyRate>> getRates(String currencyCode) async {
@@ -17,7 +19,7 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       final response = await dio.get(
         '/open/currentExchangeRate',
         queryParameters: {
-          'apiKey': 'RVZG0GHEV2KORLNA',
+          'apiKey': dotenv.env['API_KEY'],
           // 'from_symbol': 'BRL',
           // 'to_symbol': currencyCode,
           'from_symbol': currencyCode,
@@ -71,12 +73,12 @@ class CurrencyRemoteDataSourceImpl implements CurrencyRemoteDataSource {
       final response = await dio.get(
         '/open/dailyExchangeRate',
         queryParameters: {
-          'apiKey': 'RVZG0GHEV2KORLNA', 
+          'apiKey': dotenv.env['API_KEY'],
           // 'from_symbol': 'BRL',
           // 'to_symbol': currencyCode,
           'from_symbol': currencyCode,
           'to_symbol': 'BRL',
-          //'limit': 30, // Como a api n tem um limite definido forcei mostrar os ultimos 30 registros na linha 89
+          //'limit': 30, // Como a api n tem um limite definido forcei mostrar os ultimos 30 registros na linha 91
         },
       );
 
